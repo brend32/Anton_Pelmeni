@@ -64,7 +64,8 @@ init -506 screen branch_button(Image, Action, Position, Size, ImagePosition, Ima
             at brunch_button_hide
         
         pos ImagePosition
-        xysize ImageSize
+        xsize ImageSize[0]
+        ysize ImageSize[1]
 
     button:
         pos Position
@@ -149,7 +150,8 @@ screen intro():
         xalign 0.5
         yalign 0.5
         yoffset 50
-        xysize (409, 401)
+        xsize (409, 401)[0]
+        ysize (409, 401)[1]
 
     text _("Эпизод: Антон и Пельмени"):
         at alpha(7.5)
@@ -162,16 +164,17 @@ screen intro():
 
 
 screen bring_choose(has_pelmeni, has_pan):
-    if "pelmeni" in state and "pan" in state:
-        on "show" action Jump("anton_pelmeni_start.brought_all")
+    if not "no_bring_choise" in state:
+        if "pelmeni" in state and "pan" in state:
+            on "show" action [Jump("anton_pelmeni_start.brought_all")]
 
-    if not has_pelmeni:
-        use branch_button("chose_button_none", [ Jump("anton_pelmeni_start.bring_pelmeni") ], (955, 305), (647, 254), (955, 285), (647, 300)):
-            use brunch_buton_text("ДОСТАТЬ ПЕЛЬМЕНИ")
-    
-    if not has_pan:
-        use branch_button("chose_button_none", [ Jump("anton_pelmeni_start.bring_pan") ], (380, 300), (460, 345), (360, 300), (500, 345)):
-            use brunch_buton_text("ДОСТАТЬ КАСТРЮЛЮ")
+        if not has_pelmeni:
+            use branch_button("chose_button_none", [ Jump("anton_pelmeni_start.bring_pelmeni") ], (955, 305), (647, 254), (955, 285), (647, 300)):
+                use brunch_buton_text("ДОСТАТЬ ПЕЛЬМЕНИ")
+        
+        if not has_pan:
+            use branch_button("chose_button_none", [ Jump("anton_pelmeni_start.bring_pan") ], (380, 300), (460, 345), (360, 300), (500, 345)):
+                use brunch_buton_text("ДОСТАТЬ КАСТРЮЛЮ")
 
 screen trun_on_cooker():
     use branch_button("chose_button_none", [ Jump("anton_pelmeni_start.turn_on") ], (645, 640), (360, 276), (605, 640), (400, 276)):
@@ -343,11 +346,13 @@ label anton_pelmeni_start:
         call screen bring_choose(True, False)
 
     label .brought_all:
+        $ state.add("no_bring_choise")
         scene all
         show pelmeni
 
         "Все на месте. Можно приступать."
         call screen trun_on_cooker()
+        return
 
     label .turn_on:
         window hide
